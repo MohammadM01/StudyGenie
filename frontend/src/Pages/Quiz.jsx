@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { Brain, Zap, Star, Trophy, Rocket } from "lucide-react"
 import "../styles/home.css"
 
@@ -19,9 +20,16 @@ const Quiz = () => {
   const [showResults, setShowResults] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [showMotivation, setShowMotivation] = useState(false)
+  const [startTime, setStartTime] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // Generate random stars
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate("/login")
+      return
+    }
+
     const newStars = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -41,7 +49,7 @@ const Quiz = () => {
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [navigate])
 
   const handleConfigChange = (e) => {
     setQuizConfig({
@@ -52,42 +60,48 @@ const Quiz = () => {
 
   const generateQuiz = async () => {
     setIsGenerating(true)
-    // Simulate API call
-    setTimeout(() => {
-      const mockQuiz = {
-        topic: quizConfig.topic,
-        difficulty: quizConfig.difficulty,
-        questions: [
-          {
-            question: "What is the chemical symbol for water?",
-            options: ["H2O", "CO2", "NaCl", "O2"],
-            correct: 0,
-          },
-          {
-            question: "Which planet is known as the Red Planet?",
-            options: ["Venus", "Mars", "Jupiter", "Saturn"],
-            correct: 1,
-          },
-          {
-            question: "What is 2 + 2?",
-            options: ["3", "4", "5", "6"],
-            correct: 1,
-          },
-        ],
-      }
-      setCurrentQuiz(mockQuiz)
-      setCurrentQuestion(0)
-      setAnswers([])
-      setShowResults(false)
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Please log in to generate a quiz")
       setIsGenerating(false)
-    }, 2000)
+      navigate("/login")
+      return
+    }
+
+    try {
+      const response = await fetch("http://localhost:3001/api/quiz/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          topic: quizConfig.topic,
+          difficulty: quizConfig.difficulty,
+          questionCount: parseInt(quizConfig.questionCount),
+        }),
+      })
+      const data = await response.json()
+      if (data.success) {
+        setCurrentQuiz(data.data)
+        setCurrentQuestion(0)
+        setAnswers([])
+        setShowResults(false)
+        setStartTime(new Date())
+      } else {
+        alert("Failed to generate quiz: " + data.error)
+      }
+    } catch (error) {
+      alert("Error generating quiz: " + error.message)
+    }
+    setIsGenerating(false)
   }
 
   const handleAnswerSelect = (answerIndex) => {
     setSelectedAnswer(answerIndex)
   }
 
-  const submitAnswer = () => {
+  const submitAnswer = async () => {
     const newAnswers = [...answers, selectedAnswer]
     setAnswers(newAnswers)
 
@@ -95,18 +109,36 @@ const Quiz = () => {
       setCurrentQuestion(currentQuestion + 1)
       setSelectedAnswer("")
     } else {
-      setShowResults(true)
+      const timeSpent = Math.floor((new Date() - startTime) / 1000)
+      const token = localStorage.getItem("token")
+      try {
+        const response = await fetch("http://localhost:3001/api/quiz/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            quizId: currentQuiz._id,
+            userAnswers: newAnswers,
+            timeSpent,
+          }),
+        })
+        const data = await response.json()
+        if (data.success) {
+          setCurrentQuiz(data.data)
+          setShowResults(true)
+        } else {
+          alert("Failed to submit quiz: " + data.error)
+        }
+      } catch (error) {
+        alert("Error submitting quiz: " + error.message)
+      }
     }
   }
 
   const calculateScore = () => {
-    let correct = 0
-    answers.forEach((answer, index) => {
-      if (answer === currentQuiz.questions[index].correct) {
-        correct++
-      }
-    })
-    return correct
+    return currentQuiz.score
   }
 
   const triggerMotivation = () => {
@@ -120,9 +152,9 @@ const Quiz = () => {
     setAnswers([])
     setShowResults(false)
     setSelectedAnswer("")
+    setStartTime(null)
   }
 
-  // Floating particles
   const particles = Array.from({ length: 10 }, (_, i) => ({
     id: i,
     size: Math.random() * 8 + 4,
@@ -134,12 +166,10 @@ const Quiz = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
 
-      {/* Animated Stars */}
       <div className="fixed inset-0 z-0">
         {stars.map((star) => (
           <div
@@ -157,7 +187,6 @@ const Quiz = () => {
         ))}
       </div>
 
-      {/* Floating Particles */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {particles.map((particle) => (
           <div
@@ -175,9 +204,7 @@ const Quiz = () => {
         ))}
       </div>
 
-      {/* Main Content */}
       <div className="relative z-10 pt-24 pb-16">
-        {/* Header */}
         <div className="text-center mb-12 px-4">
           <div className="flex justify-center mb-4">
             <Brain className="w-16 h-16 text-purple-400 animate-pulse" />
@@ -190,12 +217,10 @@ const Quiz = () => {
           </p>
         </div>
 
-        {/* Content Container */}
         <div className="page-container">
           <div className="content-wrapper">
             <div className="centered-grid single-column">
               {!currentQuiz && !showResults ? (
-                /* Quiz Configuration */
                 <div
                   className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-purple-400/30 shadow-2xl shadow-purple-500/10 w-full"
                   style={{
@@ -208,7 +233,6 @@ const Quiz = () => {
                   </h2>
 
                   <form className="space-y-6">
-                    {/* Topic */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-300">Topic</label>
                       <input
@@ -221,7 +245,6 @@ const Quiz = () => {
                       />
                     </div>
 
-                    {/* Difficulty */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-300">Difficulty</label>
                       <div className="grid grid-cols-3 gap-3">
@@ -242,7 +265,6 @@ const Quiz = () => {
                       </div>
                     </div>
 
-                    {/* Question Count */}
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-300">Number of Questions</label>
                       <select
@@ -259,7 +281,6 @@ const Quiz = () => {
                       </select>
                     </div>
 
-                    {/* Start Quiz Button */}
                     <button
                       type="button"
                       onClick={generateQuiz}
@@ -283,7 +304,6 @@ const Quiz = () => {
                   </form>
                 </div>
               ) : showResults ? (
-                /* Quiz Results */
                 <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-green-400/30 shadow-2xl shadow-green-500/10 w-full text-center">
                   <div className="mb-6">
                     <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-4 animate-bounce" />
@@ -298,7 +318,20 @@ const Quiz = () => {
                     <p className="text-gray-300">Correct Answers</p>
                   </div>
 
-                  <div className="flex gap-4">
+                  <div className="space-y-4 max-h-[300px] overflow-y-auto">
+                    {currentQuiz.questions.map((question, index) => (
+                      <div key={index} className="bg-slate-600/30 p-4 rounded-xl">
+                        <p className="text-white font-medium mb-2">{question.question}</p>
+                        <p className={`text-sm ${answers[index] === question.correctAnswer ? 'text-green-400' : 'text-red-400'}`}>
+                          Your Answer: {question.options[answers[index]]}
+                        </p>
+                        <p className="text-sm text-gray-300">Correct Answer: {question.options[question.correctAnswer]}</p>
+                        <p className="text-sm text-gray-400 mt-1">{question.explanation}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-4 mt-6">
                     <button
                       onClick={restartQuiz}
                       className="flex-1 bg-gradient-to-r from-purple-500 to-cyan-500 text-white font-semibold py-3 px-4 rounded-xl hover:from-purple-400 hover:to-cyan-400 transition-all duration-300 transform hover:scale-105"
@@ -314,7 +347,6 @@ const Quiz = () => {
                   </div>
                 </div>
               ) : (
-                /* Quiz Questions */
                 <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 w-full">
                   <div className="mb-6">
                     <div className="flex justify-between items-center mb-4">
@@ -365,7 +397,6 @@ const Quiz = () => {
         </div>
       </div>
 
-      {/* Motivation Blast Animation */}
       {showMotivation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
           <div className="animate-bounce-slow">

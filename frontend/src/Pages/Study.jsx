@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { Calendar, BookOpen, Target, Clock, Sparkles, Star, Rocket, Zap } from "lucide-react"
 import "../styles/home.css"
 
@@ -16,9 +17,14 @@ const Study = () => {
   const [studyPlan, setStudyPlan] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [showMotivation, setShowMotivation] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // Generate random stars
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate("/login")
+    }
+
     const newStars = Array.from({ length: 120 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -38,7 +44,7 @@ const Study = () => {
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [navigate])
 
   const handleInputChange = (e) => {
     setFormData({
@@ -49,18 +55,37 @@ const Study = () => {
 
   const generateStudyPlan = async () => {
     setIsGenerating(true)
-    // Simulate API call
-    setTimeout(() => {
-      const mockPlan = [
-        { day: 1, subject: "Math", duration: "1 hr", task: "Practice basic algebra equations" },
-        { day: 2, subject: "Science", duration: "45 min", task: "Review atomic structure concepts" },
-        { day: 3, subject: "Math", duration: "1 hr", task: "Solve quadratic equations" },
-        { day: 4, subject: "Science", duration: "30 min", task: "Practice chemical bonding" },
-        { day: 5, subject: "Math", duration: "1 hr", task: "Master factoring techniques" },
-      ]
-      setStudyPlan(mockPlan)
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Please log in to generate a study plan")
       setIsGenerating(false)
-    }, 2000)
+      navigate("/login")
+      return
+    }
+    try {
+      const response = await fetch("http://localhost:3001/api/study/generate-plan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          subjects: formData.subjects,
+          goals: formData.goals,
+          hours: parseInt(formData.studyHours),
+          mood: formData.mood,
+        }),
+      })
+      const data = await response.json()
+      if (data.success) {
+        setStudyPlan(data.data.plan);
+      } else {
+        alert("Failed to generate study plan: " + data.error)
+      }
+    } catch (error) {
+      alert("Error generating study plan: " + error.message)
+    }
+    setIsGenerating(false)
   }
 
   const syncToCalendar = () => {
@@ -78,7 +103,6 @@ const Study = () => {
     epic: "Slay that math dragon, legendary hero! 🐉",
   }
 
-  // Floating particles
   const particles = Array.from({ length: 8 }, (_, i) => ({
     id: i,
     size: Math.random() * 6 + 3,
@@ -90,12 +114,10 @@ const Study = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
 
-      {/* Animated Stars */}
       <div className="fixed inset-0 z-0">
         {stars.map((star) => (
           <div
@@ -113,7 +135,6 @@ const Study = () => {
         ))}
       </div>
 
-      {/* Floating Particles */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {particles.map((particle) => (
           <div
@@ -131,11 +152,9 @@ const Study = () => {
         ))}
       </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 pt-16 ">
-        {/* Header */}
-        <div className="text-center  ">
-          <div className="flex justify-center ">
+      <div className="relative z-10 pt-16">
+        <div className="text-center">
+          <div className="flex justify-center">
             <BookOpen className="w-10 h-10 text-cyan-400 animate-pulse" />
           </div>
           <h1 className="text-5xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-orbitron pb-1">
@@ -143,11 +162,9 @@ const Study = () => {
           </h1>
         </div>
 
-        {/* Content Container */}
         <div className="page-container">
           <div className="content-wrapper">
             <div className="centered-grid two-column">
-              {/* Study Plan Form */}
               <div
                 className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-7 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 w-full max-w-lg"
                 style={{
@@ -160,7 +177,6 @@ const Study = () => {
                 </h2>
 
                 <form className="space-y-6">
-                  {/* Subjects */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                       <BookOpen className="w-4 h-4 text-cyan-400" />
@@ -176,7 +192,6 @@ const Study = () => {
                     />
                   </div>
 
-                  {/* Goals */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                       <Target className="w-4 h-4 text-purple-400" />
@@ -188,11 +203,10 @@ const Study = () => {
                       onChange={handleInputChange}
                       rows={3}
                       className="w-full px-4 py-3 bg-slate-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-400/50 focus:ring-2 focus:ring-purple-400/20 transition-all duration-300 resize-none"
-                      placeholder="e.g., Master algebra in 2 weeks, Prepare for chemistry exam"
+                      placeholder="e.g., Master algebra in 2 days, Prepare for chemistry exam"
                     />
                   </div>
 
-                  {/* Study Hours */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                       <Clock className="w-4 h-4 text-yellow-400" />
@@ -212,7 +226,6 @@ const Study = () => {
                     </select>
                   </div>
 
-                  {/* Mood Selection */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-green-400" />
@@ -240,7 +253,6 @@ const Study = () => {
                     </div>
                   </div>
 
-                  {/* Generate Button */}
                   <button
                     type="button"
                     onClick={generateStudyPlan}
@@ -262,9 +274,8 @@ const Study = () => {
                 </form>
               </div>
 
-              {/* Study Plan Display */}
               <div
-                className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-purple-400/30 shadow-2xl shadow-purple-500/10 w-full max-w-lg h-158"
+                className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-purple-400/30 shadow-2xl shadow-purple-500/10 w-full max-w-lg"
                 style={{
                   transform: `perspective(1000px) rotateY(${mousePosition.x * 0.01}deg)`,
                 }}
@@ -275,7 +286,7 @@ const Study = () => {
                 </h2>
 
                 {studyPlan ? (
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto">
                     {studyPlan.map((item, index) => (
                       <div
                         key={index}
@@ -291,7 +302,6 @@ const Study = () => {
                       </div>
                     ))}
 
-                    {/* Action Buttons */}
                     <div className="flex gap-4 mt-6">
                       <button
                         onClick={syncToCalendar}
@@ -323,7 +333,6 @@ const Study = () => {
         </div>
       </div>
 
-      {/* Motivation Blast Animation */}
       {showMotivation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
           <div className="animate-bounce-slow">
@@ -342,4 +351,3 @@ const Study = () => {
 }
 
 export default Study
-    

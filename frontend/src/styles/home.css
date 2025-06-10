@@ -312,3 +312,60 @@
     max-width: 600px;
   }
 }
+.chat-container .chat-main {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-container .chat-main .overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 211, 238, 0.5) rgba(0, 0, 0, 0.2);
+}
+
+.chat-container .chat-main .overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-container .chat-main .overflow-y-auto::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-container .chat-main .overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(34, 211, 238, 0.5);
+  border-radius: 4px;
+}
+.cosmic-card .space-y-4.max-h-\[400px\] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.5) rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-card .space-y-4.max-h-\[400px\]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cosmic-card .space-y-4.max-h-\[400px\]::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-card .space-y-4.max-h-\[400px\]::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 92, 246, 0.5);
+  border-radius: 4px;
+}
+.cosmic-card .space-y-4.max-h-\[300px\] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.5) rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-card .space-y-4.max-h-\[300px\]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cosmic-card .space-y-4.max-h-\[300px\]::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.cosmic-card .space-y-4.max-h-\[300px\]::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 92, 246, 0.5);
+  border-radius: 4px;
+}

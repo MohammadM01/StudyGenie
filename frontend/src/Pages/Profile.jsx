@@ -1,26 +1,46 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { User, Mail, Camera, LogOut, Trophy, Calendar, BookOpen, Star, Edit3, Save, X } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { User, Mail, Calendar, BookOpen, Star, Edit3, Save, X } from "lucide-react"
 import "../styles/home.css"
 
 const Profile = () => {
   const [stars, setStars] = useState([])
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isEditing, setIsEditing] = useState(false)
-  const [profileData, setProfileData] = useState({
-    name: "Cosmic Explorer",
-    email: "explorer@studygenie.com",
-    profilePicture: null,
-    joinDate: "June 2024",
-    totalQuizzes: 15,
-    studyHours: 42,
-    achievements: 8,
-  })
-  const [editData, setEditData] = useState({ ...profileData })
+  const [profileData, setProfileData] = useState(null)
+  const [editData, setEditData] = useState({})
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // Generate random stars
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate("/login")
+      return
+    }
+
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/users/profile", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        })
+        const data = await response.json()
+        if (data.success) {
+          setProfileData(data.data)
+          setEditData(data.data)
+        } else {
+          alert("Failed to fetch profile: " + data.error)
+        }
+      } catch (error) {
+        alert("Error fetching profile: " + error.message)
+      }
+    }
+
+    fetchProfile()
+
     const newStars = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -40,16 +60,39 @@ const Profile = () => {
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [navigate])
 
   const handleEdit = () => {
     setIsEditing(true)
-    setEditData({ ...profileData })
   }
 
-  const handleSave = () => {
-    setProfileData({ ...editData })
-    setIsEditing(false)
+  const handleSave = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Please log in to update profile")
+      navigate("/login")
+      return
+    }
+
+    try {
+      const response = await fetch("http://localhost:3001/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(editData),
+      })
+      const data = await response.json()
+      if (data.success) {
+        setProfileData(data.data)
+        setIsEditing(false)
+      } else {
+        alert("Failed to update profile: " + data.error)
+      }
+    } catch (error) {
+      alert("Error updating profile: " + error.message)
+    }
   }
 
   const handleCancel = () => {
@@ -64,22 +107,9 @@ const Profile = () => {
     })
   }
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setEditData({
-          ...editData,
-          profilePicture: e.target.result,
-        })
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
   const handleLogout = () => {
-    alert("Logging out... Safe travels, cosmic explorer! 🚀")
+    localStorage.removeItem("token")
+    navigate("/login")
   }
 
   const recentActivities = [
@@ -96,7 +126,6 @@ const Profile = () => {
     { name: "Night Owl", description: "Studied past midnight", icon: "🌙" },
   ]
 
-  // Floating particles
   const particles = Array.from({ length: 8 }, (_, i) => ({
     id: i,
     size: Math.random() * 6 + 3,
@@ -106,14 +135,14 @@ const Profile = () => {
     delay: Math.random() * 5,
   }))
 
+  if (!profileData) return <div>Loading...</div>
+
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
 
-      {/* Animated Stars */}
       <div className="fixed inset-0 z-0">
         {stars.map((star) => (
           <div
@@ -131,7 +160,6 @@ const Profile = () => {
         ))}
       </div>
 
-      {/* Floating Particles */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {particles.map((particle) => (
           <div
@@ -149,9 +177,7 @@ const Profile = () => {
         ))}
       </div>
 
-      {/* Main Content */}
       <div className="relative z-10 pt-24 pb-16">
-        {/* Header */}
         <div className="text-center mb-12 px-4">
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-orbitron mb-4">
             Cosmic Profile
@@ -159,11 +185,9 @@ const Profile = () => {
           <p className="text-xl text-gray-300">Your journey through the universe of knowledge</p>
         </div>
 
-        {/* Content Container */}
         <div className="page-container">
           <div className="content-wrapper">
             <div className="profile-container">
-              {/* Profile Card */}
               <div
                 className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 w-full"
                 style={{
@@ -171,13 +195,12 @@ const Profile = () => {
                 }}
               >
                 <div className="text-center">
-                  {/* Profile Picture */}
                   <div className="relative mb-6">
                     <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-cyan-400 to-purple-400 p-1">
                       <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center overflow-hidden">
                         {profileData.profilePicture ? (
                           <img
-                            src={profileData.profilePicture || "/placeholder.svg"}
+                            src={profileData.profilePicture}
                             alt="Profile"
                             className="w-full h-full object-cover rounded-full"
                           />
@@ -186,15 +209,8 @@ const Profile = () => {
                         )}
                       </div>
                     </div>
-                    {isEditing && (
-                      <label className="absolute bottom-0 right-0 bg-cyan-500 hover:bg-cyan-400 text-white p-2 rounded-full cursor-pointer transition-colors">
-                        <Camera className="w-4 h-4" />
-                        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                      </label>
-                    )}
                   </div>
 
-                  {/* Profile Info */}
                   <div className="space-y-4">
                     {isEditing ? (
                       <div className="space-y-3">
@@ -204,6 +220,7 @@ const Profile = () => {
                           value={editData.name}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 bg-slate-700/50 border border-gray-600/50 rounded-lg text-white text-center focus:outline-none focus:border-cyan-400/50"
+                          placeholder="Name"
                         />
                         <input
                           type="email"
@@ -211,6 +228,15 @@ const Profile = () => {
                           value={editData.email}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 bg-slate-700/50 border border-gray-600/50 rounded-lg text-white text-center focus:outline-none focus:border-cyan-400/50"
+                          placeholder="Email"
+                        />
+                        <input
+                          type="text"
+                          name="profilePicture"
+                          value={editData.profilePicture || ""}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 bg-slate-700/50 border border-gray-600/50 rounded-lg text-white text-center focus:outline-none focus:border-cyan-400/50"
+                          placeholder="Profile Picture URL"
                         />
                       </div>
                     ) : (
@@ -225,7 +251,6 @@ const Profile = () => {
 
                     <p className="text-cyan-400">Member since {profileData.joinDate}</p>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-3 mt-6">
                       {isEditing ? (
                         <>
@@ -257,7 +282,7 @@ const Profile = () => {
                             onClick={handleLogout}
                             className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold py-2 px-4 rounded-xl hover:from-red-400 hover:to-pink-400 transition-all duration-300 flex items-center justify-center gap-2"
                           >
-                            <LogOut className="w-4 h-4" />
+                            <X className="w-4 h-4" />
                             Logout
                           </button>
                         </>
@@ -267,28 +292,25 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* Stats and Activities */}
               <div className="space-y-8">
-                {/* Stats Cards */}
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-purple-400/30 text-center">
-                    <Trophy className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-                    <div className="text-2xl font-bold text-white">{profileData.totalQuizzes}</div>
+                    <Star className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
+                    <div className="text-2xl font-bold text-white">{profileData.totalQuizzes || 0}</div>
                     <p className="text-gray-300">Quizzes Completed</p>
                   </div>
                   <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-cyan-400/30 text-center">
                     <BookOpen className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-                    <div className="text-2xl font-bold text-white">{profileData.studyHours}</div>
+                    <div className="text-2xl font-bold text-white">{profileData.studyHours || 0}</div>
                     <p className="text-gray-300">Study Hours</p>
                   </div>
                   <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-2xl p-6 border border-green-400/30 text-center">
                     <Star className="w-8 h-8 text-green-400 mx-auto mb-3" />
-                    <div className="text-2xl font-bold text-white">{profileData.achievements}</div>
+                    <div className="text-2xl font-bold text-white">{profileData.achievements || 0}</div>
                     <p className="text-gray-300">Achievements</p>
                   </div>
                 </div>
 
-                {/* Recent Activity */}
                 <div
                   className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10"
                   style={{
@@ -317,7 +339,7 @@ const Profile = () => {
                               }`}
                             >
                               {activity.type === "quiz" ? (
-                                <Trophy className="w-5 h-5 text-white" />
+                                <Star className="w-5 h-5 text-white" />
                               ) : (
                                 <BookOpen className="w-5 h-5 text-white" />
                               )}
@@ -338,7 +360,6 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* Achievements */}
                 <div
                   className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-purple-400/30 shadow-2xl shadow-purple-500/10"
                   style={{
@@ -346,7 +367,7 @@ const Profile = () => {
                   }}
                 >
                   <h3 className="text-2xl font-bold text-white mb-6 font-orbitron flex items-center gap-3">
-                    <Trophy className="w-6 h-6 text-purple-400" />
+                    <Star className="w-6 h-6 text-purple-400" />
                     Cosmic Achievements
                   </h3>
 

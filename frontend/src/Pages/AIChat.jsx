@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import { Send, Bot, User, Star, Zap, MessageCircle } from "lucide-react"
 import "../styles/home.css"
 
@@ -16,13 +17,22 @@ const AIChat = () => {
       timestamp: new Date(),
     },
   ])
+  const [conversations, setConversations] = useState([])
   const [inputMessage, setInputMessage] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const [showMotivation, setShowMotivation] = useState(false)
   const messagesEndRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // Generate random stars
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate("/login")
+      return;
+    }
+
+    fetchConversations(token);
+
     const newStars = Array.from({ length: 80 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -42,11 +52,30 @@ const AIChat = () => {
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [navigate])
 
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  const fetchConversations = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3001/api/chat/conversations", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setConversations(data.data);
+      } else {
+        console.error("Failed to fetch conversations:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching conversations:", error.message);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -66,25 +95,40 @@ const AIChat = () => {
     setInputMessage("")
     setIsTyping(true)
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponses = [
-        "Great question! Let me break that down for you in cosmic terms... ✨",
-        "Ah, I see you're exploring the mysteries of the universe! Here's what I know... 🚀",
-        "That's a stellar question, cosmic hero! Let me illuminate the path... 🌟",
-        "Excellent! You're really pushing the boundaries of knowledge... 💫",
-      ]
-
-      const aiMessage = {
-        id: messages.length + 2,
-        type: "ai",
-        content: aiResponses[Math.floor(Math.random() * aiResponses.length)],
-        timestamp: new Date(),
-      }
-
-      setMessages((prev) => [...prev, aiMessage])
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Please log in to chat with the AI")
       setIsTyping(false)
-    }, 2000)
+      navigate("/login")
+      return
+    }
+
+    try {
+      const response = await fetch("http://localhost:3001/api/chat/send-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message: inputMessage }),
+      })
+      const data = await response.json()
+      if (data.success) {
+        const aiMessage = {
+          id: messages.length + 2,
+          type: "ai",
+          content: data.data.response,
+          timestamp: new Date(),
+        }
+        setMessages((prev) => [...prev, aiMessage])
+        fetchConversations(token);
+      } else {
+        alert("Failed to get AI response: " + data.error)
+      }
+    } catch (error) {
+      alert("Error sending message: " + error.message)
+    }
+    setIsTyping(false)
   }
 
   const handleKeyPress = (e) => {
@@ -99,7 +143,6 @@ const AIChat = () => {
     setTimeout(() => setShowMotivation(false), 3000)
   }
 
-  // Floating particles
   const particles = Array.from({ length: 6 }, (_, i) => ({
     id: i,
     size: Math.random() * 6 + 3,
@@ -111,12 +154,10 @@ const AIChat = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
 
-      {/* Animated Stars */}
       <div className="fixed inset-0 z-0">
         {stars.map((star) => (
           <div
@@ -134,7 +175,6 @@ const AIChat = () => {
         ))}
       </div>
 
-      {/* Floating Particles */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {particles.map((particle) => (
           <div
@@ -152,9 +192,7 @@ const AIChat = () => {
         ))}
       </div>
 
-      {/* Main Content */}
       <div className="relative z-10 pt-24 pb-4 h-screen flex flex-col">
-        {/* Header */}
         <div className="text-center mb-6 px-4">
           <div className="flex justify-center mb-4">
             <MessageCircle className="w-12 h-12 text-cyan-400 animate-pulse" />
@@ -165,18 +203,15 @@ const AIChat = () => {
           <p className="text-gray-300">Your intelligent study companion across the cosmos</p>
         </div>
 
-        {/* Chat Container */}
         <div className="flex-1 px-4">
           <div className="chat-container h-full">
-            {/* Chat Messages */}
             <div
               className="chat-main cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 flex flex-col h-full"
               style={{
                 transform: `perspective(1000px) rotateY(${-mousePosition.x * 0.005}deg)`,
               }}
             >
-              {/* Messages Area */}
-              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              <div className="flex-1 p-6 overflow-y-auto space-y-4 max-h-[calc(100vh-250px)]">
                 {messages.map((message) => (
                   <div
                     key={message.id}
@@ -193,7 +228,7 @@ const AIChat = () => {
                         {message.type === "ai" && <Bot className="w-5 h-5 text-purple-400 mt-0.5 flex-shrink-0" />}
                         {message.type === "user" && <User className="w-5 h-5 text-cyan-200 mt-0.5 flex-shrink-0" />}
                         <div className="flex-1">
-                          <p className="text-sm leading-relaxed">{message.content}</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
                           <p className="text-xs opacity-70 mt-1">
                             {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                           </p>
@@ -203,7 +238,6 @@ const AIChat = () => {
                   </div>
                 ))}
 
-                {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start animate-fade-in">
                     <div className="bg-slate-700/50 border border-purple-400/30 px-4 py-3 rounded-2xl">
@@ -227,7 +261,6 @@ const AIChat = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input Area */}
               <div className="p-6 border-t border-gray-600/30">
                 <div className="flex gap-3">
                   <div className="flex-1 relative">
@@ -251,7 +284,6 @@ const AIChat = () => {
               </div>
             </div>
 
-            {/* Chat History Sidebar */}
             <div
               className="chat-sidebar cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-6 border border-purple-400/30 shadow-2xl shadow-purple-500/10"
               style={{
@@ -264,20 +296,29 @@ const AIChat = () => {
               </h3>
 
               <div className="space-y-3 mb-6">
-                {[
-                  "Math: Quadratic Equations",
-                  "Chemistry: Atomic Structure",
-                  "Physics: Newton's Laws",
-                  "Biology: Cell Division",
-                ].map((topic, index) => (
-                  <div
-                    key={index}
-                    className="bg-slate-700/30 rounded-xl p-3 border border-gray-600/30 hover:border-purple-400/50 transition-all duration-300 cursor-pointer"
-                  >
-                    <p className="text-gray-300 text-sm">{topic}</p>
-                    <p className="text-gray-500 text-xs mt-1">2 hours ago</p>
-                  </div>
-                ))}
+                {conversations.length > 0 ? (
+                  conversations.map((chat) => (
+                    <div
+                      key={chat._id}
+                      className="bg-slate-700/30 rounded-xl p-3 border border-gray-600/30 hover:border-purple-400/50 transition-all duration-300 cursor-pointer"
+                      onClick={() => {
+                        setMessages(chat.messages.map((msg, index) => ({
+                          id: index + 1,
+                          type: msg.type,
+                          content: msg.content,
+                          timestamp: new Date(msg.timestamp),
+                        })));
+                      }}
+                    >
+                      <p className="text-gray-300 text-sm">{chat.title}</p>
+                      <p className="text-gray-500 text-xs mt-1">
+                        {new Date(chat.lastActivity).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-400 text-sm">No conversations yet. Start chatting!</p>
+                )}
               </div>
 
               <button
@@ -292,7 +333,6 @@ const AIChat = () => {
         </div>
       </div>
 
-      {/* Motivation Blast Animation */}
       {showMotivation && (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
           <div className="animate-bounce-slow">

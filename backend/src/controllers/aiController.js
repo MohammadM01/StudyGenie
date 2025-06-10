@@ -1,49 +1,73 @@
 const Chat = require('../models/Chat');
-  const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-  const sendMessage = async (req, res) => {
-    const { message, conversationId } = req.body;
-    try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-      const prompt = `You are StudyGenie, a cosmic AI study buddy. User message: ${message}. Respond helpfully with a cosmic theme.`;
-      const result = await model.generateContent(prompt);
-      const aiResponse = result.response.text();
+const sendMessage = async (req, res) => {
+  const { message, conversationId } = req.body;
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' });
+    }
 
-      let chat;
-      if (conversationId) {
-        chat = await Chat.findById(conversationId);
-        chat.messages.push({ type: 'user', content: message, timestamp: new Date() });
-        chat.messages.push({ type: 'ai', content: aiResponse, timestamp: new Date() });
-        chat.lastActivity = new Date();
-      } else {
-        chat = new Chat({
-          userId: req.user.id,
-          title: message.slice(0, 20),
-          messages: [
-            { type: 'user', content: message, timestamp: new Date() },
-            { type: 'ai', content: aiResponse, timestamp: new Date() }
-          ],
-          isActive: true,
-          lastActivity: new Date(),
-          createdAt: new Date()
-        });
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ success: false, error: 'Message must be a non-empty string' });
+    }
+
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const lengthConstraint = message.toLowerCase().includes('in 2 lines')
+      ? 'Respond in exactly 2 short lines (max 50 characters each).'
+      : 'Keep the response concise, under 150 words, and use bullet points or paragraphs for clarity.';
+    const prompt = `You are StudyGenie, a cosmic AI study buddy. ${lengthConstraint} User message: ${message}. Respond helpfully with a cosmic theme.`;
+
+    const result = await model.generateContent(prompt);
+    let aiResponse = result.response.text();
+    console.log('Gemini API Response:', aiResponse);
+
+    aiResponse = aiResponse.replace(/\n/g, '\n');
+
+    let chat;
+    if (conversationId) {
+      chat = await Chat.findById(conversationId);
+      if (!chat) {
+        return res.status(404).json({ success: false, error: 'Conversation not found' });
       }
-      await chat.save();
-      res.json({ success: true, data: { response: aiResponse, conversationId: chat._id } });
-    } catch (error) {
-      res.status(500).json({ success: false, error: 'Failed to send message' });
+      chat.messages.push({ type: 'user', content: message, timestamp: new Date() });
+      chat.messages.push({ type: 'ai', content: aiResponse, timestamp: new Date() });
+      chat.lastActivity = new Date();
+    } else {
+      chat = new Chat({
+        userId: req.user.id,
+        title: message.slice(0, 20),
+        messages: [
+          { type: 'user', content: message, timestamp: new Date() },
+          { type: 'ai', content: aiResponse, timestamp: new Date() },
+        ],
+        isActive: true,
+        lastActivity: new Date(),
+        createdAt: new Date(),
+      });
     }
-  };
+    await chat.save();
 
-  const getConversations = async (req, res) => {
-    try {
-      const chats = await Chat.find({ userId: req.user.id });
-      res.json({ success: true, data: chats });
-    } catch (error) {
-      res.status(500).json({ success: false, error: 'Server error' });
+    res.json({ success: true, data: { response: aiResponse, conversationId: chat._id } });
+  } catch (error) {
+    console.error('Error in sendMessage:', error.message, error.stack);
+    res.status(500).json({ success: false, error: 'Failed to send message: ' + error.message });
+  }
+};
+
+const getConversations = async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' });
     }
-  };
+    const chats = await Chat.find({ userId: req.user.id }).sort({ lastActivity: -1 });
+    res.json({ success: true, data: chats });
+  } catch (error) {
+    console.error('Error in getConversations:', error.message, error.stack);
+    res.status(500).json({ success: false, error: 'Failed to fetch conversations: ' + error.message });
+  }
+};
 
-  module.exports = { sendMessage, getConversations };
+module.exports = { sendMessage, getConversations };

@@ -1,65 +1,83 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, Sparkles, LogIn, LogOut } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // To detect route changes
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
+    const checkToken = () => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    };
+
+    // Check token on initial load and route change
+    checkToken();
+
+    // Re-check token on every route change to ensure navbar updates
+    const handleStorageChange = () => {
+      checkToken();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [location]); // Re-run on route change
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     setIsOpen(false);
-    navigate('/login');
+    navigate("/login");
   };
 
-  const navItems = [
-    { name: "Home", path: "/" },
+  const loggedInNavItems = [
+    { name: "Study", path: "/study" },
+    { name: "Quiz", path: "/quiz" },
+    { name: "AI Chat", path: "/ai-chat" },
+    { name: "Profile", path: "/profile" },
+  ];
+
+  const loggedOutNavItems = [
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
-    ...(isLoggedIn ? [
-      { name: "Study", path: "/study" },
-      { name: "Quiz", path: "/quiz" },
-      { name: "AI Chat", path: "/ai-chat" },
-      { name: "Profile", path: "/profile" },
-    ] : []),
   ];
 
   return (
-<<<<<<< Updated upstream
-    <nav className="fixed top-0 w-full z-50 bg-gray-900/80 backdrop-blur-md border-b border-cyan-400/20 h-15">
-      <div className="max-w-6xl mx-auto px-1">
-        <div className="flex justify-between items-center py-2">
-          {/* Logo */}
-          <a href="/" className="flex items-center space-x-2 group">
-=======
-    <nav className="fixed top-0 w-full z-50 bg-gray-900/80 backdrop-blur-md border-b border-cyan-400/20">
+    <nav className="fixed top-0 w-full z-50 bg-gray-800/80 backdrop-blur-md border-b border-cyan-400/20">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center space-x-2 group">
->>>>>>> Stashed changes
             <div className="text-2xl">🧞</div>
             <span className="text-xl font-bold text-cyan-400">StudyGenie</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 font-medium"
-              >
-                ⭐{item.name}
-              </Link>
-            ))}
+            {isLoggedIn ? (
+              loggedInNavItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 font-medium"
+                >
+                  ⭐{item.name}
+                </Link>
+              ))
+            ) : (
+              loggedOutNavItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 font-medium"
+                >
+                  ⭐{item.name}
+                </Link>
+              ))
+            )}
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
@@ -102,16 +120,29 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-cyan-400/20">
             <div className="flex flex-col space-y-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  ⭐{item.name}
-                </Link>
-              ))}
+              {isLoggedIn ? (
+                loggedInNavItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    ⭐{item.name}
+                  </Link>
+                ))
+              ) : (
+                loggedOutNavItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className="text-gray-300 hover:text-cyan-400 transition-colors duration-300"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    ⭐{item.name}
+                  </Link>
+                ))
+              )}
               {isLoggedIn ? (
                 <button
                   onClick={handleLogout}

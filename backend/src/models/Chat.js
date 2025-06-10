@@ -1,22 +1,43 @@
 const mongoose = require('mongoose');
 
 const ChatSchema = new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
-  title: String, // auto-generated from first message
-  messages: [{
-    type: String, // "user" or "ai"
-    content: String,
-    timestamp: Date,
-    metadata: {
-      mood: String,
-      subject: String,
-      confidence: Number
-    }
-  }],
-  subject: String, // extracted topic
-  isActive: Boolean,
-  lastActivity: Date,
-  createdAt: Date
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  messages: [
+    {
+      type: {
+        type: String,
+        enum: ['user', 'ai'],
+        required: true,
+      },
+      content: {
+        type: String,
+        required: true,
+      },
+      timestamp: {
+        type: Date,
+        required: true,
+      },
+    },
+  ],
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+  lastActivity: {
+    type: Date,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('Chat', ChatSchema);

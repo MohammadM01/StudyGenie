@@ -81,8 +81,8 @@ const Home = () => {
             <span className="absolute bottom-0 left-1/2 transform -translate-x-1/4 w-2 h-2 bg-cyan-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.3s" }} />
             <span className="absolute bottom-0 left-1/2 transform translate-x-1/4 w-2 h-2 bg-purple-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.5s" }} />
             <span className="absolute bottom-0 left-1/2 transform translate-x-3/4 w-2 h-2 bg-orange-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.7s" }} />
-            <Rocket className="absolute top-2/2 left-1/4 transform -translate-y-1/2 -translate-x-1/2 w-13 h-15 text-white animate-rocket-icon" />
-            <Rocket className="absolute top-2/2 right-1/4 transform -translate-y-1/2 translate-x-1/2 w-13 h-15 text-white animate-rocket-icon" style={{ animationDelay: "0.4s" }} />
+            <Rocket className="absolute top-2/2 left-1/4 transform -translate-y-1/2 -translate-x-3/2 w-13 h-15 text-white animate-rocket-icon" />
+            <Rocket className="absolute top-2/2 right-1/4 transform -translate-y-1/2 translate-x-3/2 w-13 h-15 text-white animate-rocket-icon" style={{ animationDelay: "0.4s" }} />
           </h1>
           <style jsx>{`
             @keyframes crazy-rocket {
