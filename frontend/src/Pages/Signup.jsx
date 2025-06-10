@@ -115,7 +115,7 @@ const Signup = () => {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-20">
         <div
-          className="w-full max-w-md transform-gpu transition-transform duration-300"
+          className="w-170 mx-auto transform-gpu transition-transform duration-300"
           style={{
             transform: `perspective(1000px) rotateX(${mousePosition.y * 0.02}deg) rotateY(${-mousePosition.x * 0.02}deg)`,
           }}

@@ -115,7 +115,7 @@ const Login = () => {
             }}
           >
             {/* Login Card */}
-            <div className="bg-gray-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl max-w-md mx-auto">
+            <div className="bg-gray-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl mx-auto w-170">
               {/* Header */}
               <div className="text-center mb-8">
                 <div className="flex justify-center mb-4">

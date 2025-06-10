@@ -132,9 +132,9 @@ const Study = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 pt-24 pb-16">
+      <div className="relative z-10 pt-24 pb-5">
         {/* Header */}
-        <div className="text-center mb-12 px-4">
+        <div className="text-center  ">
           <div className="flex justify-center mb-4">
             <BookOpen className="w-16 h-16 text-cyan-400 animate-float" />
           </div>
@@ -267,7 +267,7 @@ const Study = () => {
 
               {/* Study Plan Display */}
               <div
-                className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-purple-400/30 shadow-2xl shadow-purple-500/10 w-full max-w-lg"
+                className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-purple-400/30 shadow-2xl shadow-purple-500/10 w-full max-w-lg h-158"
                 style={{
                   transform: `perspective(1000px) rotateY(${mousePosition.x * 0.01}deg)`,
                 }}
