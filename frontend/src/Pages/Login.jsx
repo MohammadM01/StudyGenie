@@ -1,16 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import {
-  Eye,
-  EyeOff,
-  Rocket,
-  Star,
-  Mail,
-  Lock,
-  ArrowRight,
-} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Rocket, Star, Mail, Lock, ArrowRight } from "lucide-react";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,11 +10,12 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
   const [stars, setStars] = useState([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Generate random stars
     const newStars = Array.from({ length: 150 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -51,13 +44,26 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
-    // Add your login logic here
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        navigate('/study'); // Redirect to Study page after login
+      } else {
+        setError(data.error);
+      }
+    } catch {
+      setError('Something went wrong');
+    }
   };
 
-  // Floating particles
   const particles = Array.from({ length: 8 }, (_, i) => ({
     id: i,
     size: Math.random() * 8 + 4,
@@ -70,7 +76,6 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 overflow-hidden">
       <div className="w-full max-w-full overflow-hidden">
-        {/* Animated Stars */}
         <div className="fixed inset-0 z-0">
           {stars.map((star) => (
             <div
@@ -88,7 +93,6 @@ const Login = () => {
           ))}
         </div>
 
-        {/* Floating Particles */}
         <div className="fixed inset-0 z-0 pointer-events-none">
           {particles.map((particle) => (
             <div
@@ -106,7 +110,6 @@ const Login = () => {
           ))}
         </div>
 
-        {/* Main Content */}
         <div className="relative w-full px-4 pt-20">
           <div
             className="transform-gpu transition-transform duration-300"
@@ -114,9 +117,7 @@ const Login = () => {
               transform: `perspective(1000px) rotateX(${mousePosition.y * 0.02}deg) rotateY(${-mousePosition.x * 0.02}deg)`,
             }}
           >
-            {/* Login Card */}
             <div className="bg-gray-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl mx-auto w-170">
-              {/* Header */}
               <div className="text-center mb-8">
                 <div className="flex justify-center mb-4">
                   <div className="relative">
@@ -132,9 +133,7 @@ const Login = () => {
                 </p>
               </div>
 
-              {/* Login Form */}
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email Field */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                     <Mail className="w-4 h-4 text-cyan-400" />
@@ -153,7 +152,6 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Password Field */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                     <Lock className="w-4 h-4 text-cyan-400" />
@@ -179,7 +177,8 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Remember Me & Forgot Password */}
+                {error && <p className="text-red-500 text-center">{error}</p>}
+
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
                     <input
@@ -196,7 +195,6 @@ const Login = () => {
                   </Link>
                 </div>
 
-                {/* Login Button */}
                 <button
                   type="submit"
                   className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold py-3 px-6 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 hover:scale-105 shadow-lg shadow-cyan-500/25"
@@ -208,7 +206,6 @@ const Login = () => {
                   </span>
                 </button>
 
-                {/* Google Login */}
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-600/50"></div>
@@ -248,7 +245,6 @@ const Login = () => {
                 </button>
               </form>
 
-              {/* Sign Up Link */}
               <div className="text-center mt-8 pt-6 border-t border-gray-600/50">
                 <p className="text-gray-300">
                   New to the cosmic realm?{" "}
@@ -262,7 +258,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Motivation Quote */}
             <div className="text-center mt-8">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full px-6 py-3 border border-yellow-400/30">
                 <Star className="w-5 h-5 text-yellow-400" />

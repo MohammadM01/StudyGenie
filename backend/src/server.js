@@ -12,6 +12,7 @@ require('dotenv').config({ path: 'C:/Users/Muhammad Mitkar/Desktop/StudyGenie/ba
 const app = express();
 
 // Middleware
+
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
@@ -27,6 +28,7 @@ mongoose.connect(process.env.MONGODB_URI)
 .catch(err => console.error('Could not connect to MongoDB', err));
 
 // Routes
+app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/users', authenticateToken, require('./routes/userRoutes'));
 app.use('/api/study', authenticateToken, require('./routes/studyRoutes'));
 app.use('/api/quiz', authenticateToken, require('./routes/quizRoutes'));

@@ -1,25 +1,26 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { Eye, EyeOff, Star, Mail, Lock, User, ArrowRight, Sparkles } from "lucide-react"
-import "../styles/home.css"
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Star, Mail, Lock, User, ArrowRight, Sparkles } from "lucide-react";
+import "../styles/home.css";
 
 const Signup = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
     confirmPassword: "",
     agreeToTerms: false,
-  })
-  const [stars, setStars] = useState([])
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  });
+  const [error, setError] = useState("");
+  const [stars, setStars] = useState([]);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Generate random stars
     const newStars = Array.from({ length: 150 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -27,39 +28,55 @@ const Signup = () => {
       size: Math.random() * 2 + 1,
       opacity: Math.random() * 0.8 + 0.2,
       blinkDelay: Math.random() * 5,
-    }))
-    setStars(newStars)
+    }));
+    setStars(newStars);
 
     const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth - 0.5) * 20,
         y: (e.clientY / window.innerHeight - 0.5) * 20,
-      })
-    }
+      });
+    };
 
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
-    })
-  }
+    });
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!")
-      return
+      setError("Passwords don't match!");
+      return;
     }
-    console.log("Signup attempt:", formData)
-    // Add your signup logic here
-  }
+    try {
+      const response = await fetch('http://localhost:3001/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        navigate('/login'); // Redirect to login after signup
+      } else {
+        setError(data.error);
+      }
+      } catch {
+      setError('Something went wrong');
+    }
+  };
 
-  // Floating particles
   const particles = Array.from({ length: 10 }, (_, i) => ({
     id: i,
     size: Math.random() * 8 + 4,
@@ -67,16 +84,14 @@ const Signup = () => {
     y: Math.random() * 100,
     duration: Math.random() * 15 + 10,
     delay: Math.random() * 5,
-  }))
+  }));
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
 
-      {/* Animated Stars */}
       <div className="fixed inset-0 z-0">
         {stars.map((star) => (
           <div
@@ -94,7 +109,6 @@ const Signup = () => {
         ))}
       </div>
 
-      {/* Floating Particles */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         {particles.map((particle) => (
           <div
@@ -112,7 +126,6 @@ const Signup = () => {
         ))}
       </div>
 
-      {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-20">
         <div
           className="w-170 mx-auto transform-gpu transition-transform duration-300"
@@ -120,9 +133,7 @@ const Signup = () => {
             transform: `perspective(1000px) rotateX(${mousePosition.y * 0.02}deg) rotateY(${-mousePosition.x * 0.02}deg)`,
           }}
         >
-          {/* Signup Card */}
           <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 animate-fade-in-up">
-            {/* Header */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
                 <div className="relative">
@@ -136,9 +147,7 @@ const Signup = () => {
               <p className="text-gray-300">Begin your stellar learning journey</p>
             </div>
 
-            {/* Signup Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Full Name Field */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                   <User className="w-4 h-4 text-purple-400" />
@@ -158,7 +167,6 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Email Field */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                   <Mail className="w-4 h-4 text-cyan-400" />
@@ -178,7 +186,6 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                   <Lock className="w-4 h-4 text-cyan-400" />
@@ -205,7 +212,6 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Confirm Password Field */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                   <Lock className="w-4 h-4 text-purple-400" />
@@ -232,7 +238,8 @@ const Signup = () => {
                 </div>
               </div>
 
-              {/* Terms Agreement */}
+              {error && <p className="text-red-500 text-center">{error}</p>}
+
               <div className="flex items-start gap-3">
                 <input
                   type="checkbox"
@@ -254,7 +261,6 @@ const Signup = () => {
                 </label>
               </div>
 
-              {/* Signup Button */}
               <button
                 type="submit"
                 className="w-full cosmic-button bg-gradient-to-r from-purple-500 to-cyan-600 text-white font-bold py-3 px-6 rounded-xl hover:from-purple-400 hover:to-cyan-500 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-purple-500/25 animate-glow-button font-orbitron"
@@ -266,7 +272,6 @@ const Signup = () => {
                 </span>
               </button>
 
-              {/* Google Signup */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-600/50"></div>
@@ -304,7 +309,6 @@ const Signup = () => {
               </button>
             </form>
 
-            {/* Login Link */}
             <div className="text-center mt-8 pt-6 border-t border-gray-600/50">
               <p className="text-gray-300">
                 Already part of the cosmic family?{" "}
@@ -315,7 +319,6 @@ const Signup = () => {
             </div>
           </div>
 
-          {/* Motivation Quote */}
           <div className="text-center mt-8">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-full px-6 py-3 border border-purple-400/30">
               <Star className="w-5 h-5 text-purple-400 animate-spin-slow" fill="currentColor" />
@@ -326,7 +329,7 @@ const Signup = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Signup
+export default Signup;
