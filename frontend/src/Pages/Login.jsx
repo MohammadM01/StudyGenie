@@ -1,18 +1,26 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { Eye, EyeOff, Rocket, Star, Mail, Lock, ArrowRight } from "lucide-react"
-import "../styles/home.css"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Eye,
+  EyeOff,
+  Rocket,
+  Star,
+  Mail,
+  Lock,
+  ArrowRight,
+} from "lucide-react";
+import "../styles/home.css";
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-  })
-  const [stars, setStars] = useState([])
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  });
+  const [stars, setStars] = useState([]);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     // Generate random stars
@@ -23,32 +31,32 @@ const Login = () => {
       size: Math.random() * 2 + 1,
       opacity: Math.random() * 0.8 + 0.2,
       blinkDelay: Math.random() * 5,
-    }))
-    setStars(newStars)
+    }));
+    setStars(newStars);
 
     const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth - 0.5) * 20,
         y: (e.clientY / window.innerHeight - 0.5) * 20,
-      })
-    }
+      });
+    };
 
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Login attempt:", formData)
+    e.preventDefault();
+    console.log("Login attempt:", formData);
     // Add your login logic here
-  }
+  };
 
   // Floating particles
   const particles = Array.from({ length: 8 }, (_, i) => ({
@@ -58,10 +66,10 @@ const Login = () => {
     y: Math.random() * 100,
     duration: Math.random() * 15 + 10,
     delay: Math.random() * 5,
-  }))
+  }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden ">
       {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -86,7 +94,7 @@ const Login = () => {
       </div>
 
       {/* Floating Particles */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none ">
         {particles.map((particle) => (
           <div
             key={particle.id}
@@ -104,27 +112,31 @@ const Login = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 pt-20">
+      <div className="relative min-h-screen px-4 pt-20 max-w-screen flex justify-center items-center">
         <div
-          className="w-full max-w-md transform-gpu transition-transform duration-300"
+          className=" transform-gpu transition-transform duration-300"
           style={{
-            transform: `perspective(1000px) rotateX(${mousePosition.y * 0.02}deg) rotateY(${-mousePosition.x * 0.02}deg)`,
+            transform: `perspective(1000px) rotateX(${
+              mousePosition.y * 0.02
+            }deg) rotateY(${-mousePosition.x * 0.02}deg)`,
           }}
         >
           {/* Login Card */}
-          <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 animate-fade-in-up">
+          <div className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 animate-fade-in-up max-w-170 ">
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className="flex justify-center mb-4">
+            <div className="text-center mb-8 ">
+              <div className="flex justify-center mb-4 ">
                 <div className="relative">
-                  <Rocket className="w-12 h-12 text-cyan-400 animate-rocket" />
-                  <div className="absolute -inset-4 bg-cyan-400/20 rounded-full blur-xl animate-pulse"></div>
+                  <Rocket className="w-20 h-12 text-cyan-400 animate-rocket" />
+                  <div className="absolute -inset-4 bg-cyan-400/20 rounded-full blur-xl animate-pulse "></div>
                 </div>
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-orbitron mb-2">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-orbitron mb-2 ">
                 Welcome Back, Cosmic Hero!
               </h1>
-              <p className="text-gray-300">Ready to continue your learning adventure?</p>
+              <p className="text-gray-300">
+                Ready to continue your learning adventure?
+              </p>
             </div>
 
             {/* Login Form */}
@@ -170,7 +182,11 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-400/0 via-cyan-400/5 to-cyan-400/0 opacity-0 focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                 </div>
@@ -185,7 +201,10 @@ const Login = () => {
                   />
                   Remember me
                 </label>
-                <Link to="/forgot-password" className="text-cyan-400 hover:text-cyan-300 transition-colors">
+                <Link
+                  to="/forgot-password"
+                  className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -208,7 +227,9 @@ const Login = () => {
                   <div className="w-full border-t border-gray-600/50"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-slate-800/40 text-gray-400">Or continue with</span>
+                  <span className="px-4 bg-slate-800/40 text-gray-400">
+                    Or continue with
+                  </span>
                 </div>
               </div>
 
@@ -244,7 +265,10 @@ const Login = () => {
             <div className="text-center mt-8 pt-6 border-t border-gray-600/50">
               <p className="text-gray-300">
                 New to the cosmic realm?{" "}
-                <Link to="/signup" className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors">
+                <Link
+                  to="/signup"
+                  className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors"
+                >
                   Join the adventure
                 </Link>
               </p>
@@ -254,15 +278,23 @@ const Login = () => {
           {/* Motivation Quote */}
           <div className="text-center mt-8">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full px-6 py-3 border border-yellow-400/30">
-              <Star className="w-5 h-5 text-yellow-400 animate-spin-slow" fill="currentColor" />
-              <span className="text-yellow-300 font-medium">"Ready to slay those study dragons!"</span>
-              <Star className="w-5 h-5 text-yellow-400 animate-spin-reverse-slow" fill="currentColor" />
+              <Star
+                className="w-5 h-5 text-yellow-400 animate-spin-slow"
+                fill="currentColor"
+              />
+              <span className="text-yellow-300 font-medium">
+                "Ready to slay those study dragons!"
+              </span>
+              <Star
+                className="w-5 h-5 text-yellow-400 animate-spin-reverse-slow"
+                fill="currentColor"
+              />
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
