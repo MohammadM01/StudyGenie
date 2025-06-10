@@ -444,4 +444,4 @@ STUDY_PLAN_TTL = 1800           // 30 minutes
 npm install express mongoose redis jsonwebtoken bcryptjs
 npm install @google/generative-ai googleapis nodemailer
 npm install socket.io cors helmet express-rate-limit
-npm install multer cloudinary dotenv
+npm install multer cloudinary dotenv  
