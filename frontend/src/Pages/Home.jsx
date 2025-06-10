@@ -50,9 +50,9 @@ const Home = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden w-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-purple-950 via-blue-950 to-purple-950 relative overflow-x-hidden">
       {/* Animated Stars Background */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 pointer-events-none select-none">
         {stars.map((star) => (
           <div
             key={star.id}
@@ -71,106 +71,100 @@ const Home = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 pt-24 pb-16">
+      <main className="flex-1 flex flex-col justify-center relative z-10 px-2 sm:px-6 md:px-8 pt-32 ">
         {/* Hero Section */}
-        <div className="text-center px-4 mb-16">
-          {/* Main Title */}
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-tight">
+        <section className="text-center">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-600 bg-clip-text text-transparent drop-shadow-lg leading-tight">
             Welcome to StudyGenie!
           </h1>
-
-          {/* Subtitle */}
-          <h2 className="text-2xl md:text-4xl font-bold text-cyan-300 mb-8">Your AI-Powered Study Buddy!</h2>
-
-          {/* Description */}
-          <p className="text-lg md:text-xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-cyan-300 mb-8 drop-shadow">
+            Your AI-Powered Study Buddy!
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-5 leading-relaxed">
             Embark on a Cosmic Learning Quest with Personalized Plans, Quizzes, and More!
           </p>
-
-          {/* Info Box */}
-          <div className="max-w-4xl mx-auto bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-cyan-400/30 mb-16">
-            <p className="text-gray-200 text-lg leading-relaxed">
-              StudyGenie uses <span className="text-cyan-400 font-semibold">Google Gemini AI</span> to deliver custom
-              study plans, instant doubt solutions, quick quizzes, and mood-based tips—synced to your{" "}
-              <span className="text-purple-400 font-semibold">Google Calendar</span> for stellar results!
+          <div className="max-w-3xl mx-auto bg-gray-900/60 backdrop-blur-md rounded-2xl p-4 border border-cyan-400/30 mb-12 shadow-lg">
+            <p className="text-gray-100 text-base md:text-lg leading-relaxed">
+              StudyGenie uses <span className="text-cyan-300 font-semibold">Google Gemini AI</span> to deliver custom
+              study plans, instant doubt solutions, quick quizzes, and mood-based tips—synced to your {" "}
+              <span className="text-purple-300 font-semibold">Google Calendar</span> for stellar results!
             </p>
           </div>
-        </div>
+        </section>
 
         {/* Features Section */}
-        <div className="px-4 mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-white mb-16">Cosmic Features</h2>
-
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <section className="mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-14 drop-shadow">
+            Cosmic Features
+          </h2>
+          <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="group relative bg-gray-800/40 backdrop-blur-sm rounded-2xl p-6 border border-gray-600/50 hover:border-cyan-400/50 transition-all duration-500 hover:scale-105 transform text-center"
+                className="group relative bg-gradient-to-br from-gray-800/70 to-gray-900/80 backdrop-blur rounded-2xl p-6 border border-gray-700/60 hover:border-cyan-400/70 transition-all duration-500 hover:scale-105 transform text-center shadow-lg hover:shadow-cyan-400/10"
               >
-                {/* Feature Icon */}
                 <div
-                  className={`w-20 h-20 ${feature.bgColor} rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}
+                  className={`w-20 h-20 ${feature.bgColor} rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}
                 >
                   {feature.icon}
                 </div>
-
-                {/* Feature Title */}
-                <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
-
-                {/* Feature Description */}
-                <p className="text-gray-300 leading-relaxed">{feature.description}</p>
-
-                {/* Hover Glow Effect */}
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <h3 className="text-lg md:text-xl font-bold text-white mb-3 drop-shadow">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-300 text-sm md:text-base leading-relaxed">
+                  {feature.description}
+                </p>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
         {/* Central Cosmic Visual */}
-        <div className="flex justify-center mb-20">
+        <section className="flex justify-center mb-20">
           <div className="relative">
-            {/* Outer Dashed Ring */}
             <div
-              className="w-80 h-80 rounded-full border-2 border-dashed border-purple-400/60 animate-spin"
+              className="w-72 h-72 sm:w-80 sm:h-80 rounded-full border-2 border-dashed border-purple-400/60 animate-spin"
               style={{ animationDuration: "20s" }}
             >
-              {/* Inner Central Star */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <div className="w-32 h-32 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-2xl shadow-orange-500/50">
-                  <Star className="w-16 h-16 text-white" fill="currentColor" />
+                <div className="w-28 h-28 sm:w-32 sm:h-32 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-2xl shadow-orange-500/50">
+                  <Star className="w-14 h-14 sm:w-16 sm:h-16 text-white" fill="currentColor" />
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Motivation Quote */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full px-8 py-4 border border-yellow-400/40">
+        <section className="text-center mb-10">
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full px-8 py-4 border border-yellow-400/40 shadow">
             <Star className="w-6 h-6 text-yellow-400 animate-spin" fill="currentColor" />
-            <span className="text-yellow-300 font-bold text-lg">"Slay that math dragon, cosmic hero!"</span>
+            <span className="text-yellow-300 font-bold text-base md:text-lg">
+              "Slay that math dragon, cosmic hero!"
+            </span>
             <Star
               className="w-6 h-6 text-yellow-400 animate-spin"
               fill="currentColor"
               style={{ animationDirection: "reverse" }}
             />
           </div>
-        </div>
+        </section>
 
         {/* Call to Action */}
-        <div className="text-center mb-8">
-          <button className="group relative px-12 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-bold text-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 transform hover:scale-110 shadow-2xl shadow-cyan-500/30">
+        <section className="text-center mb-4">
+          <button className="group relative px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-bold text-lg md:text-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 transform hover:scale-110 shadow-2xl shadow-cyan-500/30 focus:outline-none focus:ring-4 focus:ring-cyan-400/40">
             <span className="flex items-center gap-3">
               <Rocket className="w-6 h-6 group-hover:animate-bounce" />
               Login to Launch
               <Rocket className="w-6 h-6 group-hover:animate-bounce" />
             </span>
           </button>
-
-          <p className="text-gray-400 mt-4 text-lg">Ready to begin your cosmic learning adventure?</p>
-        </div>
-      </div>
+          <p className="text-gray-400 mt-4 text-base md:text-lg">
+            Ready to begin your cosmic learning adventure?
+          </p>
+        </section>
+      </main>
     </div>
   )
 }

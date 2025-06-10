@@ -38,23 +38,23 @@ const Navbar = () => {
             ))}
             <a
               href="/login"
-              className="relative px-8 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full text-white font-bold text-sm uppercase tracking-wider shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-110 hover:rotate-1 group overflow-hidden"
+              className="relative px-8 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full text-black font-bold text-sm uppercase tracking-wider shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-110 hover:rotate-1 group overflow-hidden"
             >
               {/* Animated background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse "></div>
               
               {/* Shimmer effect */}
               <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
               
               {/* Content */}
-              <span className="relative flex items-center gap-2">
-                <LogIn className="w-4 h-4" />
-                Login
-                <Sparkles className="w-4 h-4 group-hover:animate-spin" />
+              <span className="relative flex items-center gap-2 text-black">
+                <LogIn className="w-4 h-4 text-black" />
+                <span className="font-bold">LOGIN</span>
+                <Sparkles className="w-4 h-4 group-hover:animate-spin text-black" />
               </span>
               
               {/* Glow effect */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-purple-600 blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300 -z-10"></div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-purple-600 blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300 -z-10 text-black"></div>
             </a>
           </div>
 
@@ -83,16 +83,16 @@ const Navbar = () => {
               ))}
               <a
                 href="/login"
-                className="relative inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full text-white font-bold text-center shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 group overflow-hidden"
+                className="relative inline-block px-6 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full text-black font-bold text-center shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 transform hover:scale-105 group overflow-hidden"
                 onClick={() => setIsOpen(false)}
               >
                 {/* Mobile shimmer effect */}
                 <div className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
                 
-                <span className="relative flex items-center justify-center gap-2">
+                <span className="relative flex items-center justify-center gap-2 text-black">
                   <LogIn className="w-4 h-4 text-black" />
-                  Login
-                  <Sparkles className="w-4 h-4" />
+                  <span className="font-bold">LOGIN</span>
+                  <Sparkles className="w-4 h-4 text-black" />
                 </span>
                 
                 {/* Mobile glow effect */}
