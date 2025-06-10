@@ -16,9 +16,9 @@ const Navbar = () => {
   ]
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-gray-900/80 backdrop-blur-md border-b border-cyan-400/20">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
+    <nav className="fixed top-0 w-full z-50 bg-gray-900/80 backdrop-blur-md border-b border-cyan-400/20 h-15">
+      <div className="max-w-6xl mx-auto px-1">
+        <div className="flex justify-between items-center py-2">
           {/* Logo */}
           <a href="/" className="flex items-center space-x-2 group">
             <div className="text-2xl">🧞</div>

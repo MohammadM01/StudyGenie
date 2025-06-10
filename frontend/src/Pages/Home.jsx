@@ -71,20 +71,120 @@ const Home = () => {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col justify-center relative z-10 px-2 sm:px-6 md:px-8 pt-32 ">
+      <main className="flex-1 flex flex-col justify-center relative z-10 px-2 sm:px-6 md:px-8 pt-28 ">
         {/* Hero Section */}
         <section className="text-center">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-600 bg-clip-text text-transparent drop-shadow-lg leading-tight">
+          <h1 className="text-2xl md:text-5xl font-extrabold mb-3 bg-gradient-to-r from-cyan-300 via-blue-400 to-purple-600 bg-clip-text text-transparent drop-shadow-lg leading-tight relative animate-crazy-rocket">
             Welcome to StudyGenie!
+            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-12 bg-gradient-to-b from-orange-500 to-red-600 animate-rocket-flame" />
+            <span className="absolute bottom-0 left-1/2 transform -translate-x-3/4 w-2 h-2 bg-yellow-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.1s" }} />
+            <span className="absolute bottom-0 left-1/2 transform -translate-x-1/4 w-2 h-2 bg-cyan-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.3s" }} />
+            <span className="absolute bottom-0 left-1/2 transform translate-x-1/4 w-2 h-2 bg-purple-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.5s" }} />
+            <span className="absolute bottom-0 left-1/2 transform translate-x-3/4 w-2 h-2 bg-orange-300 rounded-full animate-rocket-spark" style={{ animationDelay: "0.7s" }} />
+            <Rocket className="absolute top-2/2 left-1/4 transform -translate-y-1/2 -translate-x-1/2 w-13 h-15 text-white animate-rocket-icon" />
+            <Rocket className="absolute top-2/2 right-1/4 transform -translate-y-1/2 translate-x-1/2 w-13 h-15 text-white animate-rocket-icon" style={{ animationDelay: "0.4s" }} />
           </h1>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-cyan-300 mb-8 drop-shadow">
+          <style jsx>{`
+            @keyframes crazy-rocket {
+              0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+              }
+              10% {
+                transform: translateY(-20px) rotate(5deg) scale(1.05);
+                filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.7));
+              }
+              20% {
+                transform: translateY(-10px) rotate(-5deg) scale(1);
+                filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.7));
+              }
+              30% {
+                transform: translateY(-30px) rotate(8deg) scale(1.1);
+                filter: drop-shadow(0 0 25px rgba(255, 165, 0, 0.8));
+              }
+              40% {
+                transform: translateY(-15px) rotate(-8deg) scale(1);
+                filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.7));
+              }
+              50% {
+                transform: translateY(-40px) rotate(0deg) scale(1.15);
+                filter: drop-shadow(0 0 30px rgba(255, 255, 255, 1));
+              }
+              60% {
+                transform: translateY(-20px) rotate(10deg) scale(1);
+                filter: drop-shadow(0 0 20px rgba(255, 0, 255, 0.7));
+              }
+              70% {
+                transform: translateY(-10px) rotate-10deg) scale(1.05);
+                filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.7));
+              }
+              100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+              }
+            }
+            @keyframes rocket-flame {
+              0% {
+                height: 12px;
+                opacity: 1;
+                transform: translateY(0) scale(1);
+              }
+              50% {
+                height: 48px;
+                opacity: 0.8;
+                transform: translateY(20px) scale(1.2);
+              }
+              100% {
+                height: 12px;
+                opacity: 0;
+                transform: translateY(40px) scale(0.8);
+              }
+            }
+            @keyframes rocket-spark {
+              0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+              }
+              100% {
+                transform: translateY(60px) scale(0.3);
+                opacity: 0;
+              }
+            }
+            @keyframes rocket-icon {
+              0% {
+                transform: translateY(-50%) translateX(-1px) rotate(0deg);
+                opacity: 1;
+              }
+              50% {
+                transform: translateY(-50%) translateX(-6px) rotate(45deg);
+                opacity: 0.8;
+              }
+              100% {
+                transform: translateY(-50%) translateX(-1px) rotate(0deg);
+                opacity: 1;
+              }
+            }
+            .animate-crazy-rocket {
+              animation: crazy-rocket 5s ease-in-out infinite;
+            }
+            .animate-rocket-flame {
+              animation: rocket-flame 3s ease-in-out infinite;
+            }
+            .animate-rocket-spark {
+              animation: rocket-spark 1s ease-in-out infinite;
+            }
+            .animate-rocket-icon {
+              animation: rocket-icon 2s ease-in-out infinite;
+            }
+          `}</style>
+          <h2 className="text-2xl sm:text-xl md:text-3xl font-semibold text-cyan-300 mb-3 drop-shadow pt-1">
             Your AI-Powered Study Buddy!
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-5 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-sm text-gray-200 max-w-3xl mx-auto mb-4 leading-relaxed">
             Embark on a Cosmic Learning Quest with Personalized Plans, Quizzes, and More!
           </p>
-          <div className="max-w-3xl mx-auto bg-gray-900/60 backdrop-blur-md rounded-2xl p-4 border border-cyan-400/30 mb-12 shadow-lg">
-            <p className="text-gray-100 text-base md:text-lg leading-relaxed">
+          <div className="max-w-3xl mx-auto bg-gray-900/60 backdrop-blur-md rounded-2xl p-2 border border-cyan-400/30 mb-12 shadow-lg">
+            <p className="text-gray-100 text-base md:text-md leading-relaxed">
               StudyGenie uses <span className="text-cyan-300 font-semibold">Google Gemini AI</span> to deliver custom
               study plans, instant doubt solutions, quick quizzes, and mood-based tips—synced to your {" "}
               <span className="text-purple-300 font-semibold">Google Calendar</span> for stellar results!
@@ -93,8 +193,8 @@ const Home = () => {
         </section>
 
         {/* Features Section */}
-        <section className="mb-20">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-14 drop-shadow">
+        <section className="mb-10">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-center text-white mb-14 drop-shadow">
             Cosmic Features
           </h2>
           <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

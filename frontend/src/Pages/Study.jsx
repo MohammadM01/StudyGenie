@@ -132,18 +132,15 @@ const Study = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 pt-24 pb-5">
+      <div className="relative z-10 pt-16 ">
         {/* Header */}
         <div className="text-center  ">
-          <div className="flex justify-center mb-4">
-            <BookOpen className="w-16 h-16 text-cyan-400 animate-float" />
+          <div className="flex justify-center ">
+            <BookOpen className="w-10 h-10 text-cyan-400 animate-pulse" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-orbitron mb-4">
-            Cosmic Study Planner
+          <h1 className="text-5xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-orbitron pb-1">
+            Smart Study Planner
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Let AI craft your personalized study journey through the cosmos of knowledge
-          </p>
         </div>
 
         {/* Content Container */}
@@ -152,7 +149,7 @@ const Study = () => {
             <div className="centered-grid two-column">
               {/* Study Plan Form */}
               <div
-                className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-8 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 w-full max-w-lg"
+                className="cosmic-card bg-slate-800/40 backdrop-blur-md rounded-3xl p-7 border border-cyan-400/30 shadow-2xl shadow-cyan-500/10 w-full max-w-lg"
                 style={{
                   transform: `perspective(1000px) rotateY(${-mousePosition.x * 0.01}deg)`,
                 }}
