@@ -3,8 +3,8 @@ import Home from "./Pages/Home"
 // import Study from "./Pages/Study"
 // import Quiz from "./Pages/Quiz"
 // import Profile from "./Pages/Profile"
-// import Login from "./Pages/Login"
-// import Signup from "./Pages/Signup"
+import Login from "./Pages/Login"
+import Signup from "./Pages/Signup"
 // import AIChat from "./Pages/AIChat"
 import Navbar from "./Components/Navbar"
 import Footer from "./Components/Footer"
@@ -18,10 +18,10 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* <Route path="/study" element={<Study />} />
           <Route path="/quiz" element={<Quiz />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/ai-chat" element={<AIChat />} /> */}
+          {/* <Route path="/ai-chat" element={<AIChat />} /> */}
         </Routes>
         <Footer />
       </div>
