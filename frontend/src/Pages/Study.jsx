@@ -13,8 +13,11 @@ const Study = () => {
     goals: "",
     studyHours: "",
     mood: "energized",
+    startDate: "",
+    endDate: "",
   })
   const [studyPlan, setStudyPlan] = useState(null)
+  const [planId, setPlanId] = useState(null) // New state to store planId
   const [isGenerating, setIsGenerating] = useState(false)
   const [showMotivation, setShowMotivation] = useState(false)
   const navigate = useNavigate()
@@ -54,6 +57,18 @@ const Study = () => {
   }
 
   const generateStudyPlan = async () => {
+    if (!formData.startDate || !formData.endDate) {
+      alert("Please select a start and end date for your study plan.")
+      return
+    }
+
+    const start = new Date(formData.startDate)
+    const end = new Date(formData.endDate)
+    if (start > end) {
+      alert("Start date must be before end date.")
+      return
+    }
+
     setIsGenerating(true)
     const token = localStorage.getItem("token")
     if (!token) {
@@ -74,11 +89,14 @@ const Study = () => {
           goals: formData.goals,
           hours: parseInt(formData.studyHours),
           mood: formData.mood,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
         }),
       })
       const data = await response.json()
       if (data.success) {
-        setStudyPlan(data.data.plan);
+        setStudyPlan(data.data.plan)
+        setPlanId(data.data.planId) // Store the planId from the backend response
       } else {
         alert("Failed to generate study plan: " + data.error)
       }
@@ -88,8 +106,35 @@ const Study = () => {
     setIsGenerating(false)
   }
 
-  const syncToCalendar = () => {
-    alert("Syncing to Google Calendar... 🚀")
+  const syncToCalendar = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Please log in to sync with Google Calendar")
+      navigate("/login")
+      return
+    }
+
+    if (!planId) {
+      alert("No study plan available to sync. Please generate a plan first.")
+      return
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/study/auth?planId=${planId}`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+      const data = await response.json()
+      if (data.success) {
+        window.location.href = data.authUrl // Redirect to Google OAuth
+      } else {
+        alert("Failed to initiate Google Calendar sync: " + data.error)
+      }
+    } catch (error) {
+      alert("Error initiating Google Calendar sync: " + error.message)
+    }
   }
 
   const triggerMotivation = () => {
@@ -209,6 +254,34 @@ const Study = () => {
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-400" />
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-slate-700/50 border border-gray-600/50 rounded-xl text-white focus:outline-none focus:border-blue-400/50 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-400" />
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      name="endDate"
+                      value={formData.endDate}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-slate-700/50 border border-gray-600/50 rounded-xl text-white focus:outline-none focus:border-blue-400/50 focus:ring-2 focus:ring-blue-400/20 transition-all duration-300"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
                       <Clock className="w-4 h-4 text-yellow-400" />
                       Daily Study Hours
                     </label>
@@ -294,7 +367,7 @@ const Study = () => {
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-purple-400 font-semibold">Day {item.day}</span>
+                          <span className="text-purple-400 font-semibold">{item.date}</span>
                           <span className="text-cyan-400 text-sm">{item.duration}</span>
                         </div>
                         <h3 className="text-white font-medium mb-1">{item.subject}</h3>

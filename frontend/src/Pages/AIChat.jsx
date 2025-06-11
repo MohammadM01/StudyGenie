@@ -239,7 +239,7 @@ const AIChat = () => {
           <div className="flex items-center justify-center gap-2 mb-2">
             <MessageCircle className="w-10 h-10 text-cyan-400 animate-pulse" />
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent font-orbitron">
-              Cosmic AI Chat
+              GEMINI AI Chat
             </h1>
           </div>
           <p className="text-gray-300 text-lg">Your stellar study companion across the cosmos</p>

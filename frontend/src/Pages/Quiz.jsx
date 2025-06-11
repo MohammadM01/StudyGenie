@@ -210,7 +210,7 @@ const Quiz = () => {
             <Brain className="w-16 h-16 text-purple-400 animate-pulse" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent font-orbitron mb-4">
-            Cosmic Quiz Engine
+            GEMINI Quiz Engine
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Test your knowledge with AI-generated quizzes tailored to your cosmic journey
