@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const authenticateToken = require('./middleware/auth');
 
-require('dotenv').config({ path: 'C:/Users/Muhammad Mitkar/Desktop/StudyGenie/backend/src/.env' });
+require('dotenv').config({ path: 'D:/WORK/Project/studygenie/backend/src/.env' });
  const fs = require('fs');
 
 const app = express();
