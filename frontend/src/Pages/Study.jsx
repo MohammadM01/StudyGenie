@@ -152,7 +152,7 @@ const Study = () => {
         ))}
       </div>
 
-      <div className="relative z-10 pt-16">
+      <div className="relative z-10 pt-21">
         <div className="text-center">
           <div className="flex justify-center">
             <BookOpen className="w-10 h-10 text-cyan-400 animate-pulse" />
