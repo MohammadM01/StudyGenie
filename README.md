@@ -67,3 +67,21 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgments
 - Thank you to all contributors and supporters of StudyGenie.
 - Special thanks to the mentors and participants of the hackathon for their guidance and feedback.
+
+
+
+
+
+
+
+
+
+
+------------------------------------
+HOW TO RUN ON MD MACHINE
+cd frontend 
+npm run dev
+ 
+
+ cd backend
+ nodemon src/server.js

@@ -8,17 +8,13 @@ const authenticateToken = require('./middleware/auth');
 const studyController = require('./controllers/studyController');
 const { getAuthUrl, setCredentials, syncToCalendar } = require('./services/googleCalendar');
 
-require('dotenv').config({ path: 'C:/Users/Muhammad Mitkar/Desktop/StudyGenie/backend/src/.env' });
+// Load environment variables
+dotenv.config({ path: 'C:/Users/Muhammad Mitkar/Desktop/StudyGenie/backend/src/.env' });
 
 const app = express();
 
-// Dynamic frontend URL for redirects (set in Vercel environment variables)
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
-
 // Middleware
-app.use(cors({
-  origin: FRONTEND_URL // Allow requests from the deployed frontend
-}));
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(rateLimit({
@@ -43,7 +39,7 @@ app.get('/api/study/auth/callback', async (req, res) => {
 
   if (!code || !state) {
     console.log('Missing code or state parameter:', { code, state });
-    return res.redirect(`${FRONTEND_URL}/study?sync=error&message=${encodeURIComponent('Missing code or state parameter')}`);
+    return res.redirect(`http://localhost:5173/study?sync=error&message=${encodeURIComponent('Missing code or state parameter')}`);
   }
 
   try {
@@ -51,16 +47,17 @@ app.get('/api/study/auth/callback', async (req, res) => {
     console.log('Callback received:', { code, state, userId, planId });
     const tokens = await setCredentials(code);
     await syncToCalendar(userId, planId, tokens);
-    res.redirect(`${FRONTEND_URL}/study?sync=success`);
+    res.redirect('http://localhost:5173/study?sync=success');
   } catch (error) {
     console.error('Callback error:', error.message);
-    res.redirect(`${FRONTEND_URL}/study?sync=error&message=${encodeURIComponent(error.message)}`);
+    res.redirect(`http://localhost:5173/study?sync=error&message=${encodeURIComponent(error.message)}`);
   }
 });
 
-// Split study routes to handle authenticated routes separately
+// Study routes with authentication
 const studyRouter = express.Router();
 studyRouter.use(authenticateToken);
+
 studyRouter.post('/generate-plan', studyController.generatePlan);
 studyRouter.get('/plans', studyController.getPlans);
 studyRouter.put('/plans/:id', studyController.updatePlan);
@@ -84,11 +81,10 @@ studyRouter.get('/auth', async (req, res) => {
   }
 });
 
-// Define study routes
 app.use('/api/study', studyRouter);
-
 app.use('/api/quiz', authenticateToken, require('./routes/quizRoutes'));
 app.use('/api/chat', authenticateToken, require('./routes/aiRoutes'));
 
-// Export the app for Vercel serverless deployment
-module.exports = app;
+// Start server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
