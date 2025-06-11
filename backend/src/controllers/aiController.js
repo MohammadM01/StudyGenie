@@ -18,7 +18,7 @@ const sendMessage = async (req, res) => {
     const lengthConstraint = message.toLowerCase().includes('in 2 lines')
       ? 'Respond in exactly 2 short lines (max 50 characters each).'
       : 'Keep the response concise, under 150 words, and use bullet points or paragraphs for clarity.';
-    const prompt = `You are StudyGenie, a cosmic AI study buddy. ${lengthConstraint} User message: ${message}. Respond helpfully with a cosmic theme.`;
+    const prompt = `You are StudyGenie, a cosmic AI study buddy designed for educational support. ${lengthConstraint} Focus on providing accurate, clear, and concise answers tailored for learning. Use a friendly tone with a cosmic theme. User message: ${message}.`;
 
     const result = await model.generateContent(prompt);
     let aiResponse = result.response.text();
@@ -70,4 +70,23 @@ const getConversations = async (req, res) => {
   }
 };
 
-module.exports = { sendMessage, getConversations };
+const deleteChat = async (req, res) => {
+  const { chatId } = req.params;
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' });
+    }
+
+    const chat = await Chat.findOneAndDelete({ _id: chatId, userId: req.user.id });
+    if (!chat) {
+      return res.status(404).json({ success: false, error: 'Chat not found or not authorized' });
+    }
+
+    res.json({ success: true, message: 'Chat deleted successfully' });
+  } catch (error) {
+    console.error('Error in deleteChat:', error.message, error.stack);
+    res.status(500).json({ success: false, error: 'Failed to delete chat: ' + error.message });
+  }
+};
+
+module.exports = { sendMessage, getConversations, deleteChat };

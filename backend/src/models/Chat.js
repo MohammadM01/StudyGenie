@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+const MessageSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['user', 'ai'],
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const ChatSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -9,34 +25,18 @@ const ChatSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  messages: [
-    {
-      type: {
-        type: String,
-        enum: ['user', 'ai'],
-        required: true,
-      },
-      content: {
-        type: String,
-        required: true,
-      },
-      timestamp: {
-        type: Date,
-        required: true,
-      },
-    },
-  ],
+  messages: [MessageSchema],
   isActive: {
     type: Boolean,
     default: true,
   },
   lastActivity: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
   createdAt: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
 });
 
