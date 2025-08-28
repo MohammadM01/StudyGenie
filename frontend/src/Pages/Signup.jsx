@@ -57,7 +57,8 @@ const Signup = () => {
       return;
     }
     try {
-      const response = await fetch('http://localhost:3001/api/auth/register', {
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await fetch(`${apiBase}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

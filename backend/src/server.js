@@ -4,12 +4,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
+const path = require('path');
 const authenticateToken = require('./middleware/auth');
 const studyController = require('./controllers/studyController');
 const { getAuthUrl, setCredentials, syncToCalendar } = require('./services/googleCalendar');
 
 // Load environment variables
-dotenv.config({ path: 'C:/Users/Muhammad Mitkar/Desktop/StudyGenie/backend/src/.env' });
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 

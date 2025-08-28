@@ -3,18 +3,55 @@ const fs = require('fs');
 const path = require('path');
 const StudyPlan = require('../models/StudyPlan');
 
-const credentialsPath = path.join(__dirname, '../config/google-credentials.json');
-const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
-const { client_id, client_secret, redirect_uris } = credentials.web;
+// Look for google-credentials.json in two likely locations:
+// - backend/config/google-credentials.json
+// - backend/src/config/google-credentials.json (legacy)
+const candidatePaths = [
+  path.join(__dirname, '..', '..', 'config', 'google-credentials.json'),
+  path.join(__dirname, '..', 'config', 'google-credentials.json'),
+];
 
-// Explicitly configure the OAuth client as a confidential client
-const oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0], {
-  usePKCE: false, // Attempt to disable PKCE (may depend on library version)
-});
+let client_id, client_secret, redirect_uris;
+let credentialsRead = false;
+for (const p of candidatePaths) {
+  try {
+    if (!fs.existsSync(p)) continue;
+    const raw = fs.readFileSync(p, 'utf8');
+    if (!raw || !raw.trim()) throw new Error('Empty credentials file');
+    const credentials = JSON.parse(raw);
+    if (credentials && credentials.web) {
+      client_id = credentials.web.client_id;
+      client_secret = credentials.web.client_secret;
+      redirect_uris = credentials.web.redirect_uris;
+      credentialsRead = true;
+      break;
+    }
+  } catch (err) {
+    console.warn(`Warning: unable to read/parse google credentials at ${p}: ${err.message}`);
+    // try next candidate
+  }
+}
+
+if (!credentialsRead) {
+  // Fall back to environment variables
+  client_id = process.env.GOOGLE_CLIENT_ID || client_id;
+  client_secret = process.env.GOOGLE_CLIENT_SECRET || client_secret;
+  const redirect = process.env.GOOGLE_REDIRECT_URI || process.env.GOOGLE_REDIRECT_URLS;
+  redirect_uris = redirect ? (Array.isArray(redirect) ? redirect : [redirect]) : redirect_uris;
+}
+
+let oauth2Client = null;
+if (client_id && client_secret && Array.isArray(redirect_uris) && redirect_uris.length) {
+  // Configure the OAuth client when credentials are available
+  oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+} else {
+  console.warn('Google OAuth credentials not configured. Google Calendar features will be disabled until credentials are provided.');
+}
 
 const scopes = ['https://www.googleapis.com/auth/calendar'];
 
 const getAuthUrl = (userId, planId) => {
+  if (!oauth2Client) throw new Error('Google OAuth client not configured. Cannot generate auth URL.');
   return oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes,
@@ -25,11 +62,11 @@ const getAuthUrl = (userId, planId) => {
 };
 
 const setCredentials = async (code) => {
+  if (!oauth2Client) throw new Error('Google OAuth client not configured. Cannot exchange code for tokens.');
   try {
-    // Use the library's method, relying on the usePKCE: false setting
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
-    console.log('Tokens successfully retrieved:', tokens); // Debug log
+    console.log('Tokens successfully retrieved:', tokens);
     return tokens;
   } catch (error) {
     console.error('Error in setCredentials:', error.response ? error.response.data : error.message);
@@ -38,6 +75,7 @@ const setCredentials = async (code) => {
 };
 
 const syncToCalendar = async (userId, planId, tokens) => {
+  if (!oauth2Client) throw new Error('Google OAuth client not configured. Cannot sync to calendar.');
   oauth2Client.setCredentials(tokens);
 
   const calendar = google.calendar({ version: 'v3', auth: oauth2Client });

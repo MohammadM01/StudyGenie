@@ -22,7 +22,8 @@ const Profile = () => {
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/users/profile", {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/users/profile`, {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
@@ -75,7 +76,8 @@ const Profile = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/api/users/profile", {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/users/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

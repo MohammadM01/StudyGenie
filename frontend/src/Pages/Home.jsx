@@ -84,7 +84,7 @@ const Home = () => {
             <Rocket className="absolute top-2/2 left-1/4 transform -translate-y-1/2 -translate-x-3/2 w-13 h-15 text-white animate-rocket-icon" />
             <Rocket className="absolute top-2/2 right-1/4 transform -translate-y-1/2 translate-x-3/2 w-13 h-15 text-white animate-rocket-icon" style={{ animationDelay: "0.4s" }} />
           </h1>
-          <style jsx>{`
+          <style>{`
             @keyframes crazy-rocket {
               0% {
                 transform: translateY(0) rotate(0deg) scale(1);

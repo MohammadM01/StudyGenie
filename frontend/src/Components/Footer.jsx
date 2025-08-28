@@ -95,7 +95,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <style jsx>{`
+  <style>{`
         @keyframes twinkle {
           0%, 100% {
             opacity: 0.2;
@@ -174,7 +174,7 @@ const Footer = () => {
         .animate-pulse {
           animation: pulse 2.5s ease-in-out infinite;
         }
-      `}</style>
+  `}</style>
     </footer>
   )
 }

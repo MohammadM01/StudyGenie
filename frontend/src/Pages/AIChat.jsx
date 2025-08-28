@@ -61,7 +61,8 @@ const AIChat = () => {
 
   const fetchConversations = async (token) => {
     try {
-      const response = await fetch("http://localhost:3001/api/chat/conversations", {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/chat/conversations`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -105,7 +106,8 @@ const AIChat = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/api/chat/send-message", {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/chat/send-message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +150,8 @@ const AIChat = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/chat/delete/${chatId}`, {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/chat/delete/${chatId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,

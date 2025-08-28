@@ -69,7 +69,8 @@ const Quiz = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/api/quiz/generate", {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/quiz/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +113,8 @@ const Quiz = () => {
       const timeSpent = Math.floor((new Date() - startTime) / 1000)
       const token = localStorage.getItem("token")
       try {
-        const response = await fetch("http://localhost:3001/api/quiz/submit", {
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const response = await fetch(`${apiBase}/quiz/submit`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
